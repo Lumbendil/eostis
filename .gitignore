@@ -1,0 +1,4 @@
+*.bat
+.project
+.settings
+.buildpath
