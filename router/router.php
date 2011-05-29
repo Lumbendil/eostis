@@ -49,7 +49,7 @@ class Router
 	 * 			'controller'	=> 'controller_name',
 	 * 			'action'		=> 'action_name',
 	 * 			'params'		=> array(
-	 * 				'param_name' => 'param_value',
+	 * 				'param_name' => 'param_regex',
 	 * 				[...]
 	 * 			)
 	 * 		),
