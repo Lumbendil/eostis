@@ -14,7 +14,7 @@ namespace eostis\router;
 /**
  * Class wich handles the routing.
  */
-class Router
+class Router implements RouterInterface
 {
 	/**
 	 * The detected controller to be used.
@@ -60,52 +60,20 @@ class Router
 	public function __construct( $routes )
 	{}
 
-	/**
-	 * Parses the given Request.
-	 *
-	 * Parses the Request, populating the Router, and thus making the following
-	 * functions to return the values wich match this request:
-	 * - getController
-	 * - getAction
-	 * - getParams
-	 *
-	 * @param \eostis\request\Request $request	The request to be parsed.
-	 *
-	 * @return boolean	true on success, and false if the given request couldn't
-	 * 					be matched.
-	 */
 	public function parseRequest( \eostis\request\Request $request )
 	{}
 
 
-	/**
-	 * Returns the detected controller.
-	 *
-	 * @var string	Returns the controller name, or NULL if there has been
-	 * 	no request or if the request was incorrect.
-	 */
 	public function getController()
 	{
 		return $this->controller;
 	}
 
-	/**
-	 * Returns the detected action.
-	 *
-	 * @var string	Returns the action name, or NULL if there has been
-	 * 	no request or if the request was incorrect.
-	 */
 	public function getAction()
 	{
 		return $this->action;
 	}
 
-	/**
-	 * Returns the detected params.
-	 *
-	 * @var array	Returns the array of parameters, or NULL if there has been
-	 * 	no request or if the request was incorrect.
-	 */
 	public function getParams()
 	{
 		return $this->params;
