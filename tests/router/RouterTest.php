@@ -25,9 +25,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	 */
 	protected $router;
 
-	protected static $correct_requests;
-	protected static $wrong_requests;
-
 	public function setUp()
 	{
 		$routes = array(
@@ -36,13 +33,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
 				'controller'	=> 'main',
 				'action'		=> 'index',
 				'params'		=> array()
+			),
+			'params_uri' => array(
+				'uri'			=> '/page-[[param]]',
+				'controller'	=> 'main',
+				'action'		=> 'list',
+				'params'		=> array(
+					'param'	=> '/[1-9][0-9]*/'
+				)
 			)
 		);
 
 		$this->router = new \eostis\router\Router( $routes );
 	}
 
-	public function testGettersNoParsing()
+	public function testGettersReturnNull()
 	{
 		$this->assertNull( $this->router->getController(),
 			'Router::getController() should return NULL if no route has been
@@ -52,28 +57,35 @@ class RouterTest extends PHPUnit_Framework_TestCase
 			'Router::getAction() should return NULL if no route has been
 			 parsed' );
 
-		$this->assertEquals(array(), $this->router->getParams(),
-		 	'Router::getParams() should return an empty array if no route has
+		$this->assertNull( $this->router->getParams(),
+		 	'Router::getParams() should return NULL if no route has
 		 	 been parsed' );
+
+		$this->router->parseRequest( $this->getRequestMock( '/' ) );
+		$this->router->parseRequest( $this->getRequestMock( '/unknown' ) );
+
+		$this->assertNull( $this->router->getController(),
+			'Router::getController() should return NULL if the last route
+			 wasn\'t known' );
+
+		$this->assertNull( $this->router->getAction(),
+			'Router::getAction() should return NULL if the last route wasn\'t
+			 known' );
+
+		$this->assertNull( $this->router->getParams(),
+		 	'Router::getParams() should return NULL if the last route wasn\'t
+		 	 known' );
+
 	}
 
 	public function erroneousDataProvider()
 	{
 		return array(
 			array(
-				// Correct route but incorrect data
-				$this->getRequestMock( '/' ),
-				true,
-				'controller',
-				'action',
-				array()
+				$this->getRequestMock( '/unknown' )
 			),
 			array(
-				$this->getRequestMock( '/random_uri' ),
-				false,
-				'controller',
-				'action',
-				array()
+				$this->getRequestMock( '/page-0' )
 			)
 		);
 	}
@@ -86,6 +98,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
 				'main',
 				'index',
 				array()
+			),
+			array(
+				$this->getRequestMock( '/page-1' ),
+				'main',
+				'list',
+				array(
+					'param'	=> '1'
+				)
 			)
 		);
 	}
@@ -106,7 +126,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	/**
 	 * @dataProvider correctDataProvider
 	 */
-	public function testRouterParsesCorrectRequest
+	public function testParsesCorrectRequest
 		( $request, $controller, $action, $params )
 	{
 		$this->assertTrue( $this->router->parseRequest( $request ) );
@@ -119,22 +139,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	/**
 	 * @dataProvider erroneousDataProvider
 	 */
-	public function testRouterDoesNotParseErroneousRequest
-		( $request, $existing_uri, $controller, $action, $params )
+	public function testDoesNotParseErroneousRequest
+		( $request )
 	{
-		$this->assertEquals( $existing_uri,
-			$this->router->parseRequest( $request ) );
-
-		$this->assertNull( $this->router->getController(),
-			'Router::getController() should return NULL if the parsed route was
-			 erroneous' );
-
-		$this->assertNull( $this->router->getAction(),
-			'Router::getAction() should return NULL if the parsed route was
-			 erroneous' );
-
-		$this->assertEquals(array(), $this->router->getParams(),
-		 	'Router::getParams() should return an empty array if the parsed
-		 	 route was erroneous' );
+		$this->assertFalse( $this->router->parseRequest( $request ) );
 	}
 }
