@@ -9,8 +9,8 @@
  * @package eostis
  * @subpackage tests
  */
-
-require_once( 'H:/eostis/router/Router.php' );
+require_once( 'H:/eostis/router/routerinterface.php' );
+require_once( 'H:/eostis/router/router.php' );
 require_once( 'H:/eostis/request/Request.php' );
 
 /**
@@ -29,17 +29,17 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	{
 		$routes = array(
 			'home' => array(
-				'uri'			=> '/',
+				'route'			=> '/',
 				'controller'	=> 'main',
 				'action'		=> 'index',
 				'params'		=> array()
 			),
 			'params_uri' => array(
-				'uri'			=> '/page-[[param]]',
+				'route'			=> '/page-[[param]]',
 				'controller'	=> 'main',
 				'action'		=> 'list',
 				'params'		=> array(
-					'param'	=> '/[1-9][0-9]*/'
+					'param'	=> '[1-9][0-9]*'
 				)
 			)
 		);
