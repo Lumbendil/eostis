@@ -48,7 +48,6 @@ class Router
 	 * 			'route'			=> 'route-expresion',
 	 * 			'controller'	=> 'controller_name',
 	 * 			'action'		=> 'action_name',
-	 * 			'method'		=> 'GET',
 	 * 			'params'		=> array(
 	 * 				'param_name' => 'param_value',
 	 * 				[...]

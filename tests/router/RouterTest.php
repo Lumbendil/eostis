@@ -33,7 +33,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		$routes = array(
 			'home' => array(
 				'uri'			=> '/',
-				'method'		=> 'GET',
 				'controller'	=> 'main',
 				'action'		=> 'index',
 				'params'		=> array()
@@ -58,11 +57,20 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		 	 been parsed' );
 	}
 
-	public function correctDataProvider()
+	public function erroneousDataProvider()
 	{
 		return array(
 			array(
-				$this->getRequestMock( '/', 'GET' ),
+				// Correct route but incorrect data
+				$this->getRequestMock( '/' ),
+				true,
+				'controller',
+				'action',
+				array()
+			),
+			array(
+				$this->getRequestMock( '/random_uri' ),
+				false,
 				'controller',
 				'action',
 				array()
@@ -70,11 +78,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function erroneousDataProvider()
+	public function correctDataProvider()
 	{
 		return array(
 			array(
-				$this->getRequestMock( '/', 'GET' ),
+				$this->getRequestMock( '/' ),
 				'main',
 				'index',
 				array()
@@ -82,7 +90,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
-	protected function getRequestMock( $uri, $method )
+	protected function getRequestMock( $uri )
 	{
 		$request = $this->getMockBuilder( '\eostis\request\Request' )
 			->disableOriginalConstructor()
@@ -91,10 +99,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 		$request->expects($this->any())
 			->method('getUri')
 			->will( $this->returnValue( $uri ) );
-
-		$request->expects($this->any())
-			->method('getMethod')
-			->will( $this->returnValue( $method ) );
 
 		return $request;
 	}
@@ -116,9 +120,10 @@ class RouterTest extends PHPUnit_Framework_TestCase
 	 * @dataProvider erroneousDataProvider
 	 */
 	public function testRouterDoesNotParseErroneousRequest
-		( $request, $controller, $action, $params )
+		( $request, $existing_uri, $controller, $action, $params )
 	{
-		$this->assertFalse( $this->router->parseRequest( $request ) );
+		$this->assertEquals( $existing_uri,
+			$this->router->parseRequest( $request ) );
 
 		$this->assertNull( $this->router->getController(),
 			'Router::getController() should return NULL if the parsed route was
