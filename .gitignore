@@ -1,4 +1,6 @@
 *.bat
 .project
 .settings
-.buildpath
+.buildpath/.idea
+/.buildpath
+/.idea
